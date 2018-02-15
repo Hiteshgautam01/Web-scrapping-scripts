@@ -1,3 +1,3 @@
 # Web-scrapping-scripts
 
-This repo includes the python scripts for collect data from websites
+This repo includes the python scripts for collect data from websites currently using Beautifulsoup.
