@@ -39,6 +39,7 @@ for i in range(1,7):
 		print(web_link)
 			
 		csv_writer.writerow([headline,summary,apply_link,web_link])
-	
+
+# Added a line
 
 csv_file.close

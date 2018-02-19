@@ -3,7 +3,11 @@ import requests
 import sys
 import csv
 import re
+<<<<<<< HEAD
 # This is the updated test PR
+=======
+# This is a test PR
+>>>>>>> 9b86f15dcd1e01cba70691f271b10878ea68235d
 
 csv_file = open('web_scrape.csv', 'w')
 
