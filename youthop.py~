@@ -3,7 +3,7 @@ import requests
 import sys
 import csv
 import re
-# This is a test PR
+
 
 csv_file = open('web_scrape.csv', 'w')
 
