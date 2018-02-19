@@ -3,7 +3,6 @@ import requests
 import sys
 import csv
 import re
-# This is the updated test PR
 
 csv_file = open('web_scrape.csv', 'w')
 
@@ -40,6 +39,5 @@ for i in range(1,7):
 			
 		csv_writer.writerow([headline,summary,apply_link,web_link])
 
-# Added a line
 
 csv_file.close
