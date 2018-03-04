@@ -10,7 +10,7 @@ csv_writer = csv.writer(csv_file)
 csv_writer.writerow(['headline','summary','Apply link','Website link'])
 
 for i in range(1,7):
-	code = requests.get('https://www.youthop.com/workshops/page/',str(i))
+	code = requests.get('https://www.youthop.com/workshops/page/' + str(i))
 	soup = BeautifulSoup(code.text, 'html.parser')
 	for para in soup.find_all('div',class_='post-header'):
 		_a = para.a.get('href')
