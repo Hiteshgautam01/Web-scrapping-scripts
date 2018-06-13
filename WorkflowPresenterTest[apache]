@@ -1,0 +1,118 @@
+package org.apache.taverna.mobile.ui.workflow;
+
+import org.apache.taverna.mobile.FakeRemoteDataSource;
+import org.apache.taverna.mobile.R;
+import org.apache.taverna.mobile.data.DataManager;
+import org.apache.taverna.mobile.data.model.Workflow;
+import org.apache.taverna.mobile.data.model.Workflows;
+import org.apache.taverna.mobile.utils.RxSchedulersOverrideRule;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import io.reactivex.Observable;
+
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class WorkflowPresenterTest {
+
+    @Rule
+    public final RxSchedulersOverrideRule rxSchedulersOverrideRule = new
+            RxSchedulersOverrideRule();
+    @Mock
+    DataManager dataManager;
+
+    @Mock
+    WorkflowMvpView workflowMvpView;
+
+    private Workflows workflows;
+    private WorkflowPresenter workflowPresenter;
+    private Map<String, String> option;
+
+    @Before
+    public void setUp(){
+
+        workflowPresenter = new WorkflowPresenter(dataManager);
+        workflowPresenter.attachView(workflowMvpView);
+
+        workflows = FakeRemoteDataSource.getWorkflowList();
+
+        option = new HashMap<>();
+
+        option.put("elements", "title,type,uploader,preview,created-at");
+        option.put("page", String.valueOf(1));
+        option.put("num", String.valueOf(10));
+        option.put("order", "reverse");
+
+
+    }
+
+    @After
+    public void tearDown(){
+
+        workflowPresenter.detachView();
+    }
+
+    @Test
+    public void loadAllWorkflow_validWorkflowList_ReturnsResults() {
+
+        when(dataManager.getAllWorkflow(option)).thenReturn(
+                Observable.just(workflows));
+
+
+        workflowPresenter.loadAllWorkflow(1);
+
+        verify(workflowMvpView).showProgressbar(false);
+        verify(workflowMvpView).removeLoadMoreProgressbar();
+        verify(workflowMvpView).showWorkflows(workflows);
+        verify(workflowMvpView, never()).showSnackBar(R.string.error_failed_to_fetch_workflow);
+
+    }
+
+    @Test
+    public void loadAllWorkflow_EmptyWorkflows_ReturnNoWorkflowResults() {
+
+        Workflows workflows = new Workflows();
+
+        when(dataManager.getAllWorkflow(option)).thenReturn(
+                Observable.just(workflows));
+
+        workflowPresenter.loadAllWorkflow(1);
+
+        verify(workflowMvpView).showProgressbar(true);
+        verify(workflowMvpView, never()).showWorkflows(workflows);
+        verify(workflowMvpView, never()).showSnackBar(R.string.error_failed_to_fetch_workflow);
+
+    }
+
+    @Test
+    public void loadAllWorkflow_RuntimeError_showError(){
+
+        when(dataManager.getAllWorkflow(option)).thenReturn(
+                Observable.<Workflows>error(new RuntimeException()));
+
+        workflowPresenter.loadAllWorkflow(1);
+
+        verify(workflowMvpView).showProgressbar(false);
+        verify(workflowMvpView).removeLoadMoreProgressbar();
+        verify(workflowMvpView, never()).showWorkflows(workflows);
+        verify(workflowMvpView).showSnackBar(R.string.error_failed_to_fetch_workflow);
+
+    }
+
+    
+
+
+}
