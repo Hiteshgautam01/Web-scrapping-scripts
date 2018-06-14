@@ -96,6 +96,20 @@ public class WorkflowPresenterTest {
         verify(workflowMvpView).showSnackBar(R.string.error_failed_to_fetch_workflow);
 
     }
-    
+
+    @Test
+    public void searchWorkflow_validSearch_ReturnResults(){
+
+        when(dataManager.getAllWorkflow(search_option)).thenReturn(
+                Observable.<Workflows>error(new RuntimeException()));
+
+        workflowPresenter.loadAllWorkflow(1);
+
+        verify(workflowMvpView).showProgressbar(false);
+        verify(workflowMvpView).removeLoadMoreProgressbar();
+        verify(workflowMvpView, never()).showWorkflows(workflows);
+        verify(workflowMvpView).showSnackBar(R.string.error_failed_to_fetch_workflow);
+
+    }
 
 }
