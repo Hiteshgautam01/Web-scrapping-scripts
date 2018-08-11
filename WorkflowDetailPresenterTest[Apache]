@@ -1,0 +1,197 @@
+package org.apache.taverna.mobile.ui.workflowdetail;
+
+import org.apache.taverna.mobile.FakeRemoteDataSource;
+import org.apache.taverna.mobile.R;
+import org.apache.taverna.mobile.data.DataManager;
+import org.apache.taverna.mobile.data.model.License;
+import org.apache.taverna.mobile.data.model.Workflow;
+import org.apache.taverna.mobile.data.model.Workflows;
+import org.apache.taverna.mobile.ui.workflow.WorkflowMvpView;
+import org.apache.taverna.mobile.ui.workflow.WorkflowPresenter;
+import org.apache.taverna.mobile.utils.RxSchedulersOverrideRule;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import io.reactivex.Observable;
+
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class WorkflowDetailPresenterTest {
+
+    @Rule
+    public final RxSchedulersOverrideRule rxSchedulersOverrideRule = new
+            RxSchedulersOverrideRule();
+
+    @Mock
+    DataManager dataManager;
+
+    @Mock
+    WorkflowDetailMvpView workflowDetailMvpView;
+
+    private Workflow workflow;
+    private License license;
+    private WorkflowDetailPresenter workflowDetailPresenter;
+    private Map<String, String> optionWorkflowDetail;
+//    private Map<String, String> optionUserDetail;
+    private Map<String, String> optionLicence;
+
+    @Before
+    public void setUp() {
+
+        workflowDetailPresenter = new WorkflowDetailPresenter(dataManager);
+        workflowDetailPresenter.attachView(workflowDetailMvpView);
+
+        workflow = FakeRemoteDataSource.getWorkflowDetail();
+
+        optionWorkflowDetail = new HashMap<>();
+        optionWorkflowDetail.put("elements", "id,title,type,uploader,preview,created-at,svg,updated-at," +
+                "description,license-type,tags,content-uri");
+
+//        optionUserDetail = new HashMap<>();
+//        optionUserDetail.put("elements", "avatar");
+
+        optionLicence = new HashMap<>();
+        optionLicence.put("elements", "title,description,url,created-at");
+
+    }
+
+    @After
+    public void tearDown() {
+
+        workflowDetailPresenter.detachView();
+    }
+
+    @Test
+    public void loadDetailWorflow_ValidDetail_ReturnValidResults() {
+
+        Workflow workflow = new Workflow();
+
+        when(dataManager.getDetailWorkflow("1",optionWorkflowDetail)).thenReturn(
+                Observable.just(workflow));
+
+        workflowDetailPresenter.loadWorkflowDetail("1");
+
+        verify(workflowDetailMvpView).showProgressbar(true);
+        verify(workflowDetailMvpView).showWorkflowDetail(workflow);
+        verify(workflowDetailMvpView, never()).showErrorSnackBar("Something went wrong please try after " +
+                "sometime");
+    }
+
+    @Test
+    public void loadDetailWorkflow_EmptyWorkflow_ReturnNoWorkflowDetailResults() {
+
+        Workflow workflow = new Workflow();
+        when(dataManager.getDetailWorkflow("1",optionWorkflowDetail)).thenReturn(
+                Observable.just(workflow));
+
+        workflowDetailPresenter.loadWorkflowDetail("1");
+
+        verify(workflowDetailMvpView).showProgressbar(true);
+        verify(workflowDetailMvpView, never()).showWorkflowDetail(workflow);
+        verify(workflowDetailMvpView).showErrorSnackBar("Something went wrong please" +
+                        "try after sometime");
+    }
+
+    @Test
+    public void loadLicence_ValidLicence_ReturnValidResults() {
+
+        License license = new License();
+        when(dataManager.getLicenseDetail("1",optionLicence)).thenReturn(
+                Observable.just(license));
+
+        workflowDetailPresenter.loadLicenseDetail("1");
+
+        verify(workflowDetailMvpView).showProgressbar(true);
+        verify(workflowDetailMvpView).showWorkflowDetail(workflow);
+        verify(workflowDetailMvpView).showLicense(license);
+        verify(workflowDetailMvpView, never()).showErrorSnackBar("Something went wrong please" +
+                "try after sometime");
+    }
+
+    @Test
+    public void loadLicence_ErrorInLicence_ReturnErrorLicenceResults() {
+
+        License license = new License();
+        when(dataManager.getLicenseDetail("1",optionLicence)).thenReturn(
+                Observable.just(license));
+
+        workflowDetailPresenter.loadLicenseDetail("1");
+
+        verify(workflowDetailMvpView).showProgressbar(true);
+        verify(workflowDetailMvpView, never()).showLicense(license);
+        verify(workflowDetailMvpView).showWorkflowDetail(workflow);
+        verify(workflowDetailMvpView).showLicenseProgress(false);
+        verify(workflowDetailMvpView).showErrorSnackBar("Something went wrong please" +
+                "try after sometime");
+    }
+
+    @Test
+    public void loadDetailWorkflow_ClickOnFavButton_ReturnFavoriteWorkflowAdded() {
+
+        Workflow workflow = new Workflow();
+        when(dataManager.getDetailWorkflow("1",optionWorkflowDetail)).thenReturn(
+                Observable.just(workflow));
+
+        workflowDetailPresenter.loadWorkflowDetail("1");
+
+        verify(workflowDetailMvpView).showProgressbar(false);
+        verify(workflowDetailMvpView).setFavouriteIcon();
+        verify(workflowDetailMvpView, never()).showErrorSnackBar("Something went wrong please" +
+                "try after sometime");
+    }
+
+    @Test
+    public void loadDetailWorkflow_ClickOnFavButton_ReturnNoFavoriteWorkflowAdded() {
+
+        Workflow workflow = new Workflow();
+        when(dataManager.getDetailWorkflow("1",optionWorkflowDetail)).thenReturn(
+                Observable.just(workflow));
+
+        workflowDetailPresenter.loadWorkflowDetail("1");
+
+        verify(workflowDetailMvpView).showProgressbar(false);
+        verify(workflowDetailMvpView, never()).setFavouriteIcon();
+        verify(workflowDetailMvpView).showErrorSnackBar("Something went wrong please" +
+                "try after sometime");
+    }
+
+    @Test
+    public void loadDetailWorkflow_IfWorkflowIsFavorite_ReturnFavoriteWorkflows() {
+
+        Workflow workflow = new Workflow();
+        when(dataManager.getDetailWorkflow("1",optionWorkflowDetail)).thenReturn(
+                Observable.just(workflow));
+
+        workflowDetailPresenter.loadWorkflowDetail("1");
+
+        verify(workflowDetailMvpView).getFavouriteIcon(true);
+        verify(workflowDetailMvpView, never()).showErrorSnackBar("Something went wrong please" +
+                "try after sometime");
+    }
+
+    @Test
+    public void loadDetailWorkflow_IfWorkflowIsFavorite_ReturnNoFavoriteWorkflows() {
+
+        Workflow workflow = new Workflow();
+        when(dataManager.getDetailWorkflow("1",optionWorkflowDetail)).thenReturn(
+                Observable.just(workflow));
+
+        workflowDetailPresenter.loadWorkflowDetail("1");
+
+        verify(workflowDetailMvpView, never()).getFavouriteIcon(true);
+        verify(workflowDetailMvpView).showErrorSnackBar("Something went wrong please" +
+                "try after sometime");
+    }
+
+}
