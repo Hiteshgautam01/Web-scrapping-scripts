@@ -1,0 +1,174 @@
+package org.apache.taverna.mobile;
+
+import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.contrib.DrawerActions;
+import android.support.test.espresso.contrib.NavigationViewActions;
+import android.support.test.espresso.intent.Intents;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.view.Gravity;
+
+import org.apache.taverna.mobile.data.model.User;
+import org.apache.taverna.mobile.ui.DashboardActivity;
+import org.apache.taverna.mobile.ui.favouriteworkflow.FavouriteWorkflowsActivity;
+import org.apache.taverna.mobile.ui.favouriteworkflow.FavouriteWorkflowsFragment;
+import org.apache.taverna.mobile.ui.login.LoginActivity;
+import org.apache.taverna.mobile.ui.myworkflows.MyWorkflowActivity;
+import org.apache.taverna.mobile.ui.myworkflows.MyWorkflowFragment;
+import org.apache.taverna.mobile.ui.usage.UsageActivity;
+import org.apache.taverna.mobile.ui.workflow.WorkflowFragment;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
+
+import static android.os.SystemClock.sleep;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+
+@RunWith(AndroidJUnit4.class)
+public class DashboardActivityTest {
+
+
+    @Rule
+    public ActivityTestRule<DashboardActivity> mActivityTestRule
+            = new ActivityTestRule<>(DashboardActivity.class);
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.getActivity()
+                .getSupportFragmentManager().beginTransaction();
+
+    }
+
+    /**
+     * Checks if the Workflow fragment is launched when we click on Workflow in nav drawer
+     */
+    @Test
+    public void checkWorkflowActivity() throws Exception {
+
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_workflows));
+
+        onView(withId(R.id.frame_container)).check(matches((isDisplayed())));
+
+
+    }
+
+    /**
+     * Checks if the myWorkflow fragment is launched when we click on myWorkflow in nav drawer
+     */
+    @Test
+    public void checkMyWorkflowActivity() throws Exception {
+
+
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_my_workflows));
+
+        onView(withId(R.id.frame_container)).check(matches((isDisplayed())));
+
+
+    }
+
+    /**
+     * Checks if the favoriteWorkflow fragment is launched when we click on
+     * favoriteWorkflow in nav drawer
+     */
+    @Test
+    public void checkFavoriteWorkflowActivity() throws Exception {
+
+
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_favourite_workflow));
+
+        sleep(3000);
+
+        onView(withId(R.id.frame_container)).check(matches((isDisplayed())));
+
+    }
+
+    /**
+     * Checks if the Announcement fragment is launched when we click on
+     * announcement in nav drawer
+     */
+    @Test
+    public void checkAnnouncementActivity() throws Exception {
+
+
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_announcement));
+
+        sleep(3000);
+
+        onView(withId(R.id.frame_container)).check(matches((isDisplayed())));
+
+
+    }
+
+    /**
+     * Checks if the usage activity is launched when we click on usage in nav drawer
+     */
+    @Test
+    public void checkUsageActivity() throws Exception {
+
+        Intents.init();
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_usage));
+
+        intended(hasComponent(UsageActivity.class.getName()));
+
+        Intents.release();
+    }
+
+    /**
+     * Checks if the About activity is launched when we click on usage in nav drawer
+     */
+    @Test
+    public void checkAboutDialogue() throws Exception {
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_about));
+
+        onView(withId(R.id.frame_container)).check(matches((isDisplayed())));
+
+    }
+
+}
