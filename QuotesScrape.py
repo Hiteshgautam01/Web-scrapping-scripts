@@ -9,7 +9,7 @@ URL = 'https://www.brainyquote.com/topics/love'
 csv_file = open('quotes.csv', 'w')
 
 csv_writer = csv.writer(csv_file)
-# Add Heading as first row
+# Add Heading as first row google
 csv_writer.writerow(['Quotes', 'Author'])
 
 code = requests.get(URL)
