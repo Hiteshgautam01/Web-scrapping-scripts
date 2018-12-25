@@ -9,11 +9,12 @@ csv_file = open('exchange programmes.csv', 'w')
 csv_writer = csv.writer(csv_file)
 csv_writer.writerow(['Image Link', 'headline', 'summary', 'Website link', 'Deadline'])
 
-for i in range(1, 5):
+for i in range(1, 2):
     code = requests.get('https://www.youthop.com/exchange-programs/page/' + str(i))
     soup = BeautifulSoup(code.text, 'html.parser')
 
     for para in soup.find_all('div', class_='post-header'):
+        
         _a = para.a.get('href')
         code = requests.get(_a)
         soup = BeautifulSoup(code.text, 'html.parser')
