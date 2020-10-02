@@ -1,6 +1,6 @@
-# Web-scraping-scripts
+# Best Web-scraping-scripts
 
-This repo includes python scripts to scrape data from websites.
+This amazing repo includes python scripts to scrape data from websites.
 
 ## Contributing
 
